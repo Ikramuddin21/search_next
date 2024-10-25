@@ -1,11 +1,15 @@
 "use client";
-import moment from "moment";
-import Image from "next/image";
+import MovieCard from "@/components/MovieCard";
+import useWatchListContext from "@/hooks/useWatchListContext";
 import { useEffect, useState } from "react";
 
 const page = () => {
   const [data, setData] = useState<any>([]);
   const [page, setPage] = useState(1);
+
+  const { watchlistData }: any = useWatchListContext();
+
+  console.log(watchlistData, "use watchlist");
   console.log(process.env.API_KEY, "env");
   // (https://api.themoviedb.org/3/search/movie?query=...).
   useEffect(() => {
@@ -41,41 +45,7 @@ const page = () => {
 
       <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 place-items-center">
         {data?.map((item: any, index: number) => (
-          <div key={index} className="w-[200px]">
-            <div className="relative cursor-pointer group">
-              <Image
-                src={`https://image.tmdb.org/t/p/original${item?.poster_path}`}
-                alt="Preview"
-                width={200}
-                height={250}
-              />
-              {/* hover content start */}
-              <div
-                className="absolute top-0 w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 duration-300"
-                style={{
-                  background:
-                    "linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7))",
-                }}
-              >
-                <button className="bg-gray-500 hover:bg-gray-700 duration-300 text-white p-3">
-                  Add to Watchlist
-                </button>
-              </div>
-              {/* hover content end */}
-            </div>
-
-            <div className="mt-2">
-              <h3
-                title={item?.title}
-                className="text-[17px] font-semibold cursor-pointer w-fit hover:text-blue-500 duration-300 truncate w-[180px]"
-              >
-                {item?.title}
-              </h3>
-              <p className="text-[13px]">
-                {moment(item?.release_date).format("LL")}
-              </p>
-            </div>
-          </div>
+          <MovieCard key={index} item={item} />
         ))}
       </div>
 

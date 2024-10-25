@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import WatchlistProvider from "@/hooks/WatchlistProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -35,9 +36,11 @@ export default function RootLayout({
           backgroundRepeat: "no-repeat",
         }}
       >
-        <Header />
-        <div className="min-h-screen h-full">{children}</div>
-        <Footer />
+        <WatchlistProvider>
+          <Header />
+          <div className="min-h-screen h-full">{children}</div>
+          <Footer />
+        </WatchlistProvider>
       </body>
     </html>
   );
