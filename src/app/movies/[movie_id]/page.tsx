@@ -13,7 +13,7 @@ const MoviesDetails = () => {
 
   // movie details fetch
   const fetchMovieDetails = async () => {
-    const url = `https://api.themoviedb.org/3/movie/${movie_id}?api_key=4eeed1db0f15d9b8c88ef321e0e97f2c`;
+    const url = `https://api.themoviedb.org/3/movie/${movie_id}?api_key=${process.env.NEXT_PUBLIC_API_KEY}`;
     const res = await fetch(url);
     return res.json();
   };
@@ -27,7 +27,7 @@ const MoviesDetails = () => {
 
   // cast fetch api
   const fetchCast = async () => {
-    const url = `https://api.themoviedb.org/3/movie/${movie_id}/credits?api_key=4eeed1db0f15d9b8c88ef321e0e97f2c`;
+    const url = `https://api.themoviedb.org/3/movie/${movie_id}/credits?api_key=${process.env.NEXT_PUBLIC_API_KEY}`;
     const res = await fetch(url);
     return res.json();
   };
@@ -39,7 +39,7 @@ const MoviesDetails = () => {
 
   // recommendation fetch api
   const fetchRecommendation = async () => {
-    const url = `https://api.themoviedb.org/3/movie/${movie_id}/recommendations?api_key=4eeed1db0f15d9b8c88ef321e0e97f2c`;
+    const url = `https://api.themoviedb.org/3/movie/${movie_id}/recommendations?api_key=${process.env.NEXT_PUBLIC_API_KEY}`;
     const res = await fetch(url);
     return res.json();
   };

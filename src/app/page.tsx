@@ -13,7 +13,7 @@ const page = () => {
   const [pageForSearch, setPageForSearch] = useState(1);
   const [data, setData] = useState<MovieCardType[]>([]);
   const [inputValue, setInputValue] = useState("");
-  console.log(process.env, "env");
+  // console.log(process.env.NEXT_PUBLIC_API_KEY, "env");
 
   const {
     register,
@@ -28,7 +28,7 @@ const page = () => {
 
   // fetch search value
   const fetchSearch = async () => {
-    const url = `https://api.themoviedb.org/3/search/movie?api_key=4eeed1db0f15d9b8c88ef321e0e97f2c&query=${inputValue}&page=${pageForSearch}`;
+    const url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.NEXT_PUBLIC_API_KEY}&query=${inputValue}&page=${pageForSearch}`;
     const res = await fetch(url);
     return res.json();
   };
@@ -54,7 +54,7 @@ const page = () => {
 
   // movies fetch function
   const fetchMovies = async () => {
-    const url = `https://api.themoviedb.org/3/movie/popular?api_key=4eeed1db0f15d9b8c88ef321e0e97f2c&page=${page}`;
+    const url = `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_API_KEY}&page=${page}`;
     const res = await fetch(url);
     return res.json();
   };
