@@ -1,8 +1,19 @@
 "use client";
 import { WatchlistContextType } from "@/types";
-import React, { createContext, ReactNode, useState } from "react";
+import React, {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useState,
+} from "react";
 
-export const WatchListContext = createContext(null);
+type ContextType = {
+  watchlistData: WatchlistContextType;
+  setWatchlistData: Dispatch<SetStateAction<WatchlistContextType>>;
+};
+
+export const WatchListContext = createContext<ContextType | unknown>(null);
 
 const WatchlistProvider = ({ children }: { children: ReactNode }) => {
   const [watchlistData, setWatchlistData] = useState<WatchlistContextType[]>(

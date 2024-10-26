@@ -3,6 +3,7 @@ import MovieCard from "@/components/MovieCard";
 import useWatchListContext from "@/hooks/useWatchListContext";
 import image from "@/assets/no_data_found1.png";
 import Image from "next/image";
+import { WatchlistContextType } from "@/types";
 
 const Watchlist = () => {
   const { watchlistData }: any = useWatchListContext();
@@ -11,7 +12,7 @@ const Watchlist = () => {
     <>
       {watchlistData?.length ? (
         <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 place-items-center">
-          {watchlistData?.map((item: any, index: number) => (
+          {watchlistData?.map((item: WatchlistContextType, index: number) => (
             <MovieCard key={index} item={item} />
           ))}
         </div>

@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WatchlistProvider from "@/hooks/WatchlistProvider";
+import TanStackQueryProvider from "@/hooks/TanStackQueryProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -36,11 +37,13 @@ export default function RootLayout({
           backgroundRepeat: "no-repeat",
         }}
       >
-        <WatchlistProvider>
-          <Header />
-          <div className="min-h-screen h-full">{children}</div>
-          <Footer />
-        </WatchlistProvider>
+        <TanStackQueryProvider>
+          <WatchlistProvider>
+            <Header />
+            <div className="min-h-screen h-full">{children}</div>
+            <Footer />
+          </WatchlistProvider>
+        </TanStackQueryProvider>
       </body>
     </html>
   );

@@ -1,57 +1,130 @@
 "use client";
+import Loader from "@/components/Loader";
 import MovieCard from "@/components/MovieCard";
-import useWatchListContext from "@/hooks/useWatchListContext";
+import { MovieCardType } from "@/types";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+
+type IFormInput = { title: string };
 
 const page = () => {
-  const [data, setData] = useState<any>([]);
   const [page, setPage] = useState(1);
+  const [pageForSearch, setPageForSearch] = useState(1);
+  const [data, setData] = useState<MovieCardType[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  console.log(process.env, "env");
 
-  const { watchlistData }: any = useWatchListContext();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IFormInput>();
 
-  console.log(watchlistData, "use watchlist");
-  console.log(process.env.API_KEY, "env");
-  // (https://api.themoviedb.org/3/search/movie?query=...).
+  // hande submit search
+  const onSubmit: SubmitHandler<IFormInput> = (value) => {
+    setInputValue(value.title);
+  };
+
+  // fetch search value
+  const fetchSearch = async () => {
+    const url = `https://api.themoviedb.org/3/search/movie?api_key=4eeed1db0f15d9b8c88ef321e0e97f2c&query=${inputValue}&page=${pageForSearch}`;
+    const res = await fetch(url);
+    return res.json();
+  };
+
+  const {
+    data: { results: searchResults = [] } = {},
+    isLoading: isLoadingSearch,
+    isSuccess: isSuccessSearch,
+  } = useQuery({
+    queryKey: ["searchMovies", inputValue, pageForSearch],
+    queryFn: fetchSearch,
+    enabled: Boolean(inputValue),
+  });
+
+  // store previous data when load more click in search
   useEffect(() => {
-    fetch(
-      `https://api.themoviedb.org/3/movie/popular?api_key=4eeed1db0f15d9b8c88ef321e0e97f2c&page=${page}`
-    )
-      .then((res) => res.json())
-      .then((res) => setData((prev: any) => [...prev, ...res?.results]));
-  }, [page]);
+    if (pageForSearch > 1) {
+      setData((prev: MovieCardType[]) => [...prev, ...searchResults]);
+    } else {
+      setData(searchResults);
+    }
+  }, [isSuccessSearch, pageForSearch]);
 
-  // search result
-  // useEffect(() => {
-  //   fetch(
-  //     `https://api.themoviedb.org/3/search/movie?query=${}&page=${page}`
-  //   )
-  //     .then((res) => res.json())
-  //     .then((res) => setData((prev: any) => [...prev, ...res?.results]));
-  // }, [page]);
-  console.log(data, "data");
+  // movies fetch function
+  const fetchMovies = async () => {
+    const url = `https://api.themoviedb.org/3/movie/popular?api_key=4eeed1db0f15d9b8c88ef321e0e97f2c&page=${page}`;
+    const res = await fetch(url);
+    return res.json();
+  };
+
+  // movies fetching in tanstack query
+  const {
+    data: { results = [] } = {},
+    isLoading,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["movies", page],
+    queryFn: fetchMovies,
+  });
+
+  // store previous data when load more click
+  useEffect(() => {
+    if (page > 1) {
+      setData((prev: MovieCardType[]) => [...prev, ...results]);
+    } else {
+      setData(results);
+    }
+  }, [isSuccess, page]);
+
+  const conditionalFetch = () => {
+    if (searchResults?.length) {
+      if (pageForSearch > 1) return data;
+      else return searchResults;
+    } else {
+      if (page > 1) return data;
+      else return results;
+    }
+  };
 
   return (
     <div className="mt-16">
-      <div className="flex items-center">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex items-center">
         <input
-          type="text"
+          {...register("title", {
+            required: true,
+            minLength: 4,
+          })}
           placeholder="Search Movies title..."
           className="pl-2.5 outline-0 bg-cyan-900 text-gray-200 placeholder-gray-300 py-2 w-full"
         />
-        <button className="bg-gray-700 text-white py-2 px-4 border-0">
+        <button
+          type="submit"
+          className="bg-gray-700 text-white py-2 px-4 border-0"
+        >
           Search
         </button>
-      </div>
+      </form>
+      {errors.title && <p className="text-red-700">Minimum four character</p>}
 
       <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 place-items-center">
-        {data?.map((item: any, index: number) => (
-          <MovieCard key={index} item={item} />
-        ))}
+        {isLoadingSearch || isLoading
+          ? Array(4)
+              .fill(null)
+              ?.map((_, index: number) => <Loader key={index} />)
+          : conditionalFetch()?.map((item: MovieCardType, index: number) => (
+              <MovieCard key={index} item={item} />
+            ))}
       </div>
 
       <div className="text-center mt-7">
         <button
-          onClick={() => setPage((prev: number) => prev + 1)}
+          onClick={() =>
+            searchResults?.length
+              ? setPageForSearch((prev: number) => prev + 1)
+              : setPage((prev: number) => prev + 1)
+          }
           className="bg-gray-600 hover:bg-gray-700 duration-300 text-white p-3 w-2/5"
         >
           Load More
